@@ -1,6 +1,7 @@
 @*支援多個路由*@
 @page "/note"
 @page "/MyNotes"
+@using BlazorAppWasmLab.Client.Models
 
 <h3>我的記事</h3>
 
@@ -12,12 +13,45 @@
         <th>刪除</th>
     </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+    @foreach (var noteItem in Notes)
+    {
+        <tr>
+            <td>@noteItem.Title</td>
+            <td>
+                <button class="btn btn-primary">修改</button>
+            </td>
+            <td>
+                <button class="btn btn-danger" @onclick="() => Delete(noteItem)">刪除</button>
+            </td>
+        </tr>
+    }
+    </tbody>
 </table>
 <div>
-    <button class="btn btn-primary">新增</button>
+    <button class="btn btn-primary" @onclick="Add">新增</button>
 </div>
 
 @code {
+    public List<MyNote> Notes { get; set; } = new List<MyNote>();
+
+    protected override void OnInitialized()
+    {
+        Notes = new List<MyNote>
+        {
+            new() { Title = "買蘋果" },
+            new() { Title = "買西瓜" }
+        };
+    }
+
+    private void Delete(MyNote noteItem)
+    {
+        Notes.Remove(noteItem);
+    }
+
+    private void Add()
+    {
+        Notes.Add(new MyNote { Title = $"新事項 {DateTime.Now.Second.ToString()}" });
+    }
 
 }
