@@ -1,7 +1,9 @@
 @*支援多個路由*@
 @page "/note"
 @page "/MyNotes"
+@using System.Data
 @using BlazorAppWasmLab.Client.Models
+@using Microsoft.AspNetCore.Components
 
 <h3>我的記事</h3>
 
@@ -19,7 +21,7 @@
         <tr>
             <td>@noteItem.Title</td>
             <td>
-                <button class="btn btn-primary">修改</button>
+                <button class="btn btn-primary" @onclick="() => Update(noteItem)">修改</button>
             </td>
             <td>
                 <button class="btn btn-danger" @onclick="() => Delete(noteItem)">刪除</button>
@@ -31,9 +33,44 @@
 <div>
     <button class="btn btn-primary" @onclick="Add">新增</button>
 </div>
+@if (ShowPopup)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">記事項目</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseDialog">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="row p-2">
+                            <EditForm Model="@CurrentMyNote" OnValidSubmit="@HandleValidSubmit">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <ValidationSummary></ValidationSummary>
+                                <div class="form-group">
+                                    <label for="taskName">事項名稱</label>
+                                    <InputText id="taskName" class="form-control" @bind-Value="@CurrentMyNote.Title"></InputText>
+                                </div>
+                                <button type="submit" class="btn btn-primary">儲存</button>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 
 @code {
     public List<MyNote> Notes { get; set; } = new List<MyNote>();
+    public MyNote CurrentMyNote { get; set; } = new MyNote();
+    public MyNote OrigMyNote { get; set; } = new MyNote();
+    public bool ShowPopup { get; set; } = false;
+    public bool IsNewMode { get; set; }
 
     protected override void OnInitialized()
     {
@@ -51,7 +88,36 @@
 
     private void Add()
     {
-        Notes.Add(new MyNote { Title = $"新事項 {DateTime.Now.Second.ToString()}" });
+        IsNewMode = true;
+        CurrentMyNote = new MyNote();
+        ShowPopup = true;
+    }
+
+    private void Update(MyNote noteItem)
+    {
+        IsNewMode = false;
+        CurrentMyNote = OrigMyNote = noteItem.Clone();
+        CurrentMyNote = noteItem.Clone();
+        OrigMyNote = noteItem;
+        ShowPopup = true;
+    }
+
+    private void HandleValidSubmit()
+    {
+        ShowPopup = false;
+        if (IsNewMode)
+        {
+            Notes.Add(CurrentMyNote);
+        }
+        else
+        {
+            OrigMyNote.Title = CurrentMyNote.Title;
+        }
+    }
+
+    private void CloseDialog()
+    {
+        ShowPopup = false;
     }
 
 }
