@@ -1,9 +1,10 @@
 @*支援多個路由*@
 @page "/note"
 @page "/MyNotes"
-@using System.Data
 @using BlazorAppWasmLab.Client.Models
+@using BlazorAppWasmLab.Client.Services
 @using Microsoft.AspNetCore.Components
+@inject IMyNoteService MyNoteService
 
 <h3>我的記事</h3>
 
@@ -72,18 +73,14 @@
     public bool ShowPopup { get; set; } = false;
     public bool IsNewMode { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Notes = new List<MyNote>
-        {
-            new() { Title = "買蘋果" },
-            new() { Title = "買西瓜" }
-        };
+        Notes = await MyNoteService.RetrieveAsync();
     }
 
-    private void Delete(MyNote noteItem)
+    private async Task Delete(MyNote noteItem)
     {
-        Notes.Remove(noteItem);
+        await MyNoteService.DeleteAsync(noteItem);
     }
 
     private void Add()
@@ -102,17 +99,20 @@
         ShowPopup = true;
     }
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         ShowPopup = false;
         if (IsNewMode)
         {
-            Notes.Add(CurrentMyNote);
+            await MyNoteService.CreateAsync(CurrentMyNote);
         }
         else
         {
-            OrigMyNote.Title = CurrentMyNote.Title;
+            await MyNoteService.UpdateAsync(OrigMyNote, CurrentMyNote);
         }
+
+        Notes = await MyNoteService.RetrieveAsync();
+        StateHasChanged();
     }
 
     private void CloseDialog()
