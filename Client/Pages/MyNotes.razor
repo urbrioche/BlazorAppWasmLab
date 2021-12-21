@@ -1,8 +1,8 @@
 @*支援多個路由*@
 @page "/note"
 @page "/MyNotes"
-@using BlazorAppWasmLab.Client.Models
 @using BlazorAppWasmLab.Client.Services
+@using BlazorAppWasmLab.Shared
 @using Microsoft.AspNetCore.Components
 @inject IMyNoteService MyNoteService
 
@@ -67,7 +67,7 @@
 
 
 @code {
-    public List<MyNote> Notes { get; set; } = new List<MyNote>();
+    public List<MyNote>? Notes { get; set; } = new List<MyNote>();
     public MyNote CurrentMyNote { get; set; } = new MyNote();
     public MyNote OrigMyNote { get; set; } = new MyNote();
     public bool ShowPopup { get; set; } = false;
@@ -81,6 +81,8 @@
     private async Task Delete(MyNote noteItem)
     {
         await MyNoteService.DeleteAsync(noteItem);
+        Notes = await MyNoteService.RetrieveAsync();
+        StateHasChanged();
     }
 
     private void Add()

@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BlazorAppWasmLab.Client.Models;
+namespace BlazorAppWasmLab.Shared;
 
 public class MyNote : ICloneable
 {
+    public int Id { get; set; }
     [Required(ErrorMessage = "事項不可為空白")]
     public string Title { get; set; }
 
