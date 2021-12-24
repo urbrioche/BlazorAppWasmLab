@@ -20,6 +20,20 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showModal(modalId){
+            const element = document.querySelector(`#${modalId}`);
+            const modal = bootstrap.Modal.getOrCreateInstance(element);
+            modal.show();
+        }
+
+        function closeModal(modalId){
+            const element = document.querySelector(`#${modalId}`);
+            const modal = bootstrap.Modal.getOrCreateInstance(element);
+            modal.hide();
+        }
+    </script>
 </body>
 
 </html>
