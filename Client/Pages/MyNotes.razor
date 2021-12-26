@@ -71,6 +71,8 @@
     public MyNote OrigMyNote { get; set; } = new MyNote();
     public bool IsNewMode { get; set; }
     public string DialogId { get; set; } = "myModal";
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
     private IJSObjectReference _module;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -88,9 +90,21 @@
 
     private async Task Delete(MyNote noteItem)
     {
-        await MyNoteService.DeleteAsync(noteItem);
-        Notes = await MyNoteService.RetrieveAsync();
-        StateHasChanged();
+        var parameters = new ModalParameters();
+        parameters.Add("RecordTitleName", noteItem.Title);
+        var confirm = Modal.Show<ConfirmDelete>("確定要刪除嗎?", parameters);
+        var result = await confirm.Result;
+        if (result.Cancelled)
+        {
+            Console.WriteLine("Modal was cancelled");
+        }
+        else
+        {
+            Console.WriteLine(result.Data.ToString());
+            await MyNoteService.DeleteAsync(noteItem);
+            Notes = await MyNoteService.RetrieveAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task Add()

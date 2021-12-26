@@ -1,0 +1,26 @@
+<div class="simple-form">
+    <div class="form-group">
+        <p>請確認是否要刪除這筆 @RecordTitleName</p>
+    </div>
+    <button @onclick="SubmitForm" class="btn btn-danger">刪除</button>
+    <button @onclick="Cancel" class="btn btn-secondary">取消</button>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    public BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter]
+    public string RecordTitleName { get; set; }
+
+    private async Task SubmitForm()
+    {
+        await ModalInstance.CloseAsync(ModalResult.Ok($"RecordTitleName {RecordTitleName} was submitted successfully."));
+    }
+
+    private async Task Cancel()
+    {
+        await ModalInstance.CloseAsync(ModalResult.Cancel());
+    }
+
+}
