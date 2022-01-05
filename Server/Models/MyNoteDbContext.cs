@@ -9,5 +9,5 @@ public class MyNoteDbContext : DbContext
     {
     }
 
-    public DbSet<MyNote> MyNotes { get; set; }
+    public DbSet<MyNote> MyNotes { get; set; } = null!;
 }

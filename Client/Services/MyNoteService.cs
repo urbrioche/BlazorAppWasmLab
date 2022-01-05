@@ -28,9 +28,9 @@ public class MyNoteService : IMyNoteService
         await _httpClient.DeleteAsync($"MyNote/{myNote.Id}");
     }
 
-    public async Task<List<MyNote>?> RetrieveAsync()
+    public async Task<List<MyNote>> RetrieveAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<MyNote>>("MyNote");
+        return await _httpClient.GetFromJsonAsync<List<MyNote>>("MyNote") ?? new List<MyNote>();
     }
 
     public async Task UpdateAsync(MyNote origMyNote, MyNote myNote)

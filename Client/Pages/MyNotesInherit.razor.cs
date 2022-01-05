@@ -13,12 +13,12 @@ public class MyNotesBase : ComponentBase, IAsyncDisposable
 
     [Inject] public IMyNoteService MyNoteService { get; set; } = null!;
 
-    protected List<MyNote>? Notes { get; set; } = new List<MyNote>();
+    protected List<MyNote> Notes { get; set; } = new List<MyNote>();
     protected MyNote CurrentMyNote { get; set; } = new MyNote();
     private MyNote OrigMyNote { get; set; } = new MyNote();
     private bool IsNewMode { get; set; }
     protected string DialogId { get; set; } = "myModal";
-    [CascadingParameter] public IModalService? Modal { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; } = null!;
     private IJSObjectReference _module = null!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

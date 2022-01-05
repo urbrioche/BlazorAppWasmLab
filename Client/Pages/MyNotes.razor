@@ -66,14 +66,15 @@
 
 
 @code {
-    public List<MyNote>? Notes { get; set; } = new List<MyNote>();
-    public MyNote CurrentMyNote { get; set; } = new MyNote();
-    public MyNote OrigMyNote { get; set; } = new MyNote();
-    public bool IsNewMode { get; set; }
-    public string DialogId { get; set; } = "myModal";
+    private List<MyNote> Notes { get; set; } = new();
+    private MyNote CurrentMyNote { get; set; } = new();
+    private MyNote OrigMyNote { get; set; } = new();
+    private bool IsNewMode { get; set; }
+    private string DialogId { get; set; } = "myModal";
     [CascadingParameter]
-    public IModalService Modal { get; set; }
-    private IJSObjectReference _module;
+    public IModalService Modal { get; set; } = null!;
+
+    private IJSObjectReference _module = null!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

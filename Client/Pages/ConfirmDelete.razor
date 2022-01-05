@@ -9,18 +9,24 @@
 @code {
 
     [CascadingParameter]
-    public BlazoredModalInstance ModalInstance { get; set; }
+    public BlazoredModalInstance? ModalInstance { get; set; }
     [Parameter]
-    public string RecordTitleName { get; set; }
+    public string? RecordTitleName { get; set; }
 
     private async Task SubmitForm()
     {
-        await ModalInstance.CloseAsync(ModalResult.Ok($"RecordTitleName {RecordTitleName} was submitted successfully."));
+        if (ModalInstance != null)
+        {
+            await ModalInstance.CloseAsync(ModalResult.Ok($"RecordTitleName {RecordTitleName} was submitted successfully."));
+        }
     }
 
     private async Task Cancel()
     {
-        await ModalInstance.CloseAsync(ModalResult.Cancel());
+        if (ModalInstance != null)
+        {
+            await ModalInstance.CloseAsync(ModalResult.Cancel());
+        }
     }
 
 }
