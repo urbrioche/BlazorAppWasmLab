@@ -7,17 +7,17 @@ using Microsoft.JSInterop;
 
 namespace BlazorAppWasmLab.Client.Pages;
 
-public class MyNotesBase : ComponentBase, IAsyncDisposable
+public partial class MyNotesPartialClass : IAsyncDisposable
 {
     [Inject] public IJSRuntime JsRuntime { get; set; } = null!;
 
     [Inject] public IMyNoteService MyNoteService { get; set; } = null!;
 
-    protected List<MyNote> Notes { get; set; } = new();
-    protected MyNote CurrentMyNote { get; set; } = new();
+    private List<MyNote> Notes { get; set; } = new();
+    private MyNote CurrentMyNote { get; set; } = new();
     private MyNote OrigMyNote { get; set; } = new();
     private bool IsNewMode { get; set; }
-    protected string DialogId { get; set; } = "myModal";
+    private string DialogId { get; set; } = "myModal";
     [CascadingParameter] public IModalService Modal { get; set; } = null!;
     private IJSObjectReference _module = null!;
 
@@ -34,7 +34,7 @@ public class MyNotesBase : ComponentBase, IAsyncDisposable
         Notes = await MyNoteService.RetrieveAsync();
     }
 
-    protected async Task Delete(MyNote noteItem)
+    private async Task Delete(MyNote noteItem)
     {
         var parameters = new ModalParameters();
         parameters.Add("RecordTitleName", noteItem.Title);
@@ -53,14 +53,14 @@ public class MyNotesBase : ComponentBase, IAsyncDisposable
         }
     }
 
-    protected async Task Add()
+    private async Task Add()
     {
         IsNewMode = true;
         CurrentMyNote = new MyNote();
         await OpenDialog();
     }
 
-    protected async Task Update(MyNote noteItem)
+    private async Task Update(MyNote noteItem)
     {
         IsNewMode = false;
         CurrentMyNote = OrigMyNote = noteItem.Clone();
@@ -69,7 +69,7 @@ public class MyNotesBase : ComponentBase, IAsyncDisposable
         await OpenDialog();
     }
 
-    protected async Task HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         await CloseDialog();
         if (IsNewMode)
@@ -85,7 +85,7 @@ public class MyNotesBase : ComponentBase, IAsyncDisposable
         StateHasChanged();
     }
 
-    protected async Task CloseDialog()
+    private async Task CloseDialog()
     {
         await _module.InvokeVoidAsync("closeModal", DialogId);
     }
