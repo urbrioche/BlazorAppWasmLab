@@ -1,0 +1,95 @@
+@page "/MyNotesVm"
+@using Microsoft.AspNetCore.Components
+@using BlazorAppWasmLab.Client.ViewModels
+@inject MyNotesViewModel ViewModel
+@implements IAsyncDisposable
+@implements BlazorAppWasmLab.Client.Interfaces.IRazorPage
+
+<h3>我的記事 (使用ViewModel)</h3>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>事項</th>
+        <th>修改</th>
+        <th>刪除</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var noteItem in ViewModel.Notes)
+    {
+        <tr>
+            <td>@noteItem.Title</td>
+            <td>
+                <button class="btn btn-primary" @onclick="() => ViewModel.Update(noteItem)">修改</button>
+            </td>
+            <td>
+                <button class="btn btn-danger" @onclick="() => ViewModel.Delete(noteItem)">刪除</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<div>
+    <button class="btn btn-primary" @onclick="ViewModel.Add">新增</button>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="@ViewModel.DialogId">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">記事項目</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="ViewModel.CloseDialog">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="row p-2">
+                        <EditForm Model="@ViewModel.CurrentMyNote" OnValidSubmit="@ViewModel.HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <ValidationSummary></ValidationSummary>
+                            <div class="form-group">
+                                <label for="taskName">事項名稱</label>
+                                <InputText id="taskName" class="form-control" @bind-Value="@ViewModel.CurrentMyNote.Title"></InputText>
+                            </div>
+                            <button type="submit" class="btn btn-primary">儲存</button>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ViewModel.Setup(this);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reference: https://github.com/vulcanlee/Blazor-Xamarin-Full-Stack-HOL/blob/main/Src/BusinessNET6/Backend/Components/Views/ProductView.razor
+        await ViewModel.Setup(this);
+        await ViewModel.ReloadAsync();
+    }
+
+    public Task NeedRefreshAsync()
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+       await ViewModel.JsModule.DisposeAsync();
+    }
+}
