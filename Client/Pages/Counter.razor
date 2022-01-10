@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@implements IDisposable
 
 <PageTitle>Counter</PageTitle>
 
@@ -8,10 +9,13 @@
     <button class="btn btn-primary" @onclick="PeriodicUpdate">定時更新</button>
 </div>
 <h3 class="text-danger">@message</h3>
-<br />
+<br/>
+
 @code{
     string message = "";
     int counter = 0;
+    bool running = true;
+
     void PeriodicUpdate()
     {
         message = "啟動定時更新訊息";
@@ -19,16 +23,22 @@
         {
             // 這邊會有射後不理的問題
             // 當網頁切到別頁，這個回圈仍會持續進行，可以設中斷點或觀察console寫出來的時間
-            while (true)
+            // while (true)
+            // 解決射後不裡
+            while (running)
             {
                 await Task.Delay(2000);
                 message = $"計數器數值 : {++counter}";
                 Console.WriteLine(DateTime.Now);
-                await InvokeAsync(() =>
-                {
-                    StateHasChanged();
-                });
+                await InvokeAsync(() => { StateHasChanged(); });
             }
         });
     }
+
+    public void Dispose()
+    {
+        // 解決射後不裡
+        running = false;
+    }
+
 }
