@@ -12,6 +12,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<IMyNoteService, MyNoteService>();
 builder.Services.AddScoped<MyNotesViewModel>();
+builder.Services.AddScoped<GameViewModel>();
 builder.Services.AddBlazoredModal();
 
 await builder.Build().RunAsync();

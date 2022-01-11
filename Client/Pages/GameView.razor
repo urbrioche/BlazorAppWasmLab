@@ -1,0 +1,41 @@
+@page "/game"
+@using BlazorAppWasmLab.Client.ViewModels
+@inject GameViewModel _gameViewModel
+@implements BlazorAppWasmLab.Client.Interfaces.IRazorPage
+
+<div>
+    <div>請選擇 剪刀 石頭 布</div>
+    <div>
+        @foreach (var item in _gameViewModel.AllItems.Skip(1))
+        {
+            <img src="@item.Image" class="@item.BackGround" style="width:7em; height: 7em" @onclick="() => { _gameViewModel.Choose(item); }" alt=""/>
+        }
+    </div>
+
+    <div class="my-5">
+        <span>
+            <img src="@_gameViewModel.You.Image" style="width: 7em; height: 7em" alt=""/>
+            你
+        </span>
+        <span class="mx-4"> vs </span>
+        <span>
+            電腦
+            <img src="@_gameViewModel.Computer.Image" style="width: 7em; height: 7em" alt=""/>
+        </span>
+    </div>
+</div>
+
+@code{
+    protected override void OnInitialized()
+    {
+        _gameViewModel.Setup(this);
+        base.OnInitialized();
+    }
+
+    public async Task NeedRefreshAsync()
+    {
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    public IModalService Modal { get; set; }
+}
