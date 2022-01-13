@@ -1,0 +1,61 @@
+@page "/gameAdvance"
+@using BlazorAppWasmLab.Client.ViewModels
+@inject GameAdvanceViewModel _gameViewModel
+@implements BlazorAppWasmLab.Client.Interfaces.IRazorPage
+
+<div>
+    <div>請選擇 剪刀 石頭 布</div>
+    <div>
+        @foreach (var item in _gameViewModel.AllItems.Skip(1))
+        {
+            <img src="@item.Image" class="@item.BackGround" style="width:10em; height: 10em" @onclick="() => { _gameViewModel.Choose(item); }" alt=""/>
+        }
+    </div>
+    <div>
+        @if (_gameViewModel.GameStatus == GameStatus.Start)
+        {
+            <button class="btn btn-primary" @onclick="_gameViewModel.Start">開始</button>
+        }
+        else if (_gameViewModel.GameStatus == GameStatus.Run)
+        {
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="_gameViewModel.Restart">再來一次</button>
+        }
+    </div>
+    <div>
+        @if (_gameViewModel.GameStatus == GameStatus.Restart)
+        {
+            <span class="display-4">這次遊戲結果為</span>
+        }
+        <span class="display-4 text-danger">
+            @_gameViewModel.GameMessage
+        </span>
+    </div>
+    <div>
+        <img src="@_gameViewModel.Computer.Image" style="width:10em;height:10em;" alt="">
+    </div>
+</div>
+
+@code{
+
+    protected override void OnInitialized()
+    {
+        _gameViewModel.Setup(this);
+        base.OnInitialized();
+    }
+
+    public async Task NeedRefreshAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public IModalService Modal { get; set; } = null!;
+
+    public async Task NeedInvokeAsync(Action action)
+    {
+        await InvokeAsync(action);
+    }
+
+}

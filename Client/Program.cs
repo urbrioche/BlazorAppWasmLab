@@ -13,6 +13,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<IMyNoteService, MyNoteService>();
 builder.Services.AddScoped<MyNotesViewModel>();
 builder.Services.AddScoped<GameViewModel>();
+builder.Services.AddScoped<GameAdvanceViewModel>();
 builder.Services.AddBlazoredModal();
 
 await builder.Build().RunAsync();

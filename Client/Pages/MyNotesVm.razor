@@ -2,8 +2,8 @@
 @using Microsoft.AspNetCore.Components
 @using BlazorAppWasmLab.Client.ViewModels
 @inject MyNotesViewModel ViewModel
-@implements IAsyncDisposable
 @implements BlazorAppWasmLab.Client.Interfaces.IRazorPage
+@implements IAsyncDisposable
 
 <h3>我的記事 (使用ViewModel)</h3>
 
@@ -92,4 +92,10 @@
     {
        await ViewModel.JsModule.DisposeAsync();
     }
+
+    public async Task NeedInvokeAsync(Action action)
+    {
+        await InvokeAsync(action);
+    }
+
 }

@@ -8,7 +8,7 @@
     <div>
         @foreach (var item in _gameViewModel.AllItems.Skip(1))
         {
-            <img src="@item.Image" class="@item.BackGround" style="width:7em; height: 7em" @onclick="() => { _gameViewModel.Choose(item); }" alt=""/>
+            <img src="@item.Image" class="@item.BackGround" style="width:7em; height: 7em" @onclick="async () => { await _gameViewModel.Choose(item); }" alt=""/>
         }
     </div>
 
@@ -26,6 +26,7 @@
 </div>
 
 @code{
+
     protected override void OnInitialized()
     {
         _gameViewModel.Setup(this);
@@ -34,8 +35,14 @@
 
     public async Task NeedRefreshAsync()
     {
-        await InvokeAsync(() => StateHasChanged());
+        await InvokeAsync(StateHasChanged);
     }
 
-    public IModalService Modal { get; set; }
+    public IModalService Modal { get; set; } = null!;
+
+    public async Task NeedInvokeAsync(Action action)
+    {
+        await InvokeAsync(action);
+    }
+
 }
