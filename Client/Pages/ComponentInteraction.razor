@@ -1,0 +1,36 @@
+@page "/ComponentInteraction"
+@using BlazorAppWasmLab.Client.Components
+
+@if (!ShowMessage)
+{
+    <div>
+        <button class="btn btn-primary" @onclick="OnShowMessageBox">Show Message</button>
+    </div>
+    <p>@ResponseMessage</p>
+}
+else
+{
+    <ComponentInteractionChildView Para1="@PassArgument" OnBtnCloseCallback="BtnCloseCallback"/>
+}
+
+@code {
+
+    public bool ShowMessage { get; set; }
+
+    public string ResponseMessage { get; set; }
+
+    public string PassArgument { get; set; }
+
+    private void OnShowMessageBox()
+    {
+        PassArgument = "Hello, Blazor";
+        ShowMessage = true;
+    }
+
+    private void BtnCloseCallback(string message)
+    {
+        ShowMessage = false;
+        ResponseMessage = message;
+    }
+
+}
