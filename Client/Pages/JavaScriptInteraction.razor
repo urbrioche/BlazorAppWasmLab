@@ -1,0 +1,32 @@
+@page "/JavaScriptInteraction"
+@inject IJSRuntime _jsRuntime
+<h1>C#與JavaScript互動呼叫</h1>
+<button class="btn btn-primary" @onclick="AskYourName">你是誰？(C# 呼叫 JS)</button>
+<div class="display-4 text-success">@Name</div>
+<button class="btn btn-primary my-4" @onclick="AskYourAge">你幾歲？(C# -> JS -> C#)</button>
+<div class="display-4 text-danger">@Message</div>
+
+@code {
+
+    public string? Name { get; set; }
+    public string? Message { get; set; }
+
+    private async Task AskYourName()
+    {
+        Name = await _jsRuntime.InvokeAsync<string>("helloWorld.askYourName", "你是誰", "請輸入你的姓名");
+    }
+
+
+    private async Task AskYourAge()
+    {
+        var dotNetObjectReference = DotNetObjectReference.Create(this);
+        await _jsRuntime.InvokeVoidAsync("helloWorld.sayYourAgeToCsharp", dotNetObjectReference);
+    }
+
+    [JSInvokable]
+    public void GetStringFromJavaScript(string message)
+    {
+        Message = message;
+    }
+
+}
