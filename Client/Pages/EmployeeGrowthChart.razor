@@ -1,0 +1,25 @@
+@page "/employeeGrowthChart"
+@inject IJSRuntime _jsRuntime
+@implements IAsyncDisposable
+<PageTitle>Employee Growth Chart</PageTitle>
+
+<div id="container"></div>
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/src/employee-growth-chart-export.js");
+            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await (_employeeGrowthChart?.DisposeAsync() ?? ValueTask.CompletedTask);
+    }
+
+    private IJSObjectReference? _employeeGrowthChart;
+}
