@@ -3,10 +3,12 @@ export class EmployeeGrowthChart {
     #chart;
 
     constructor() {
-        this.#containerId = 'container';
     }
 
-    render(data) {
+    render(options) {
+        let data;
+        ({data, containerId: this.#containerId} = options);
+
         const seriesData = _.chain(data)
             .groupBy(x => x.sector)
             .entries()

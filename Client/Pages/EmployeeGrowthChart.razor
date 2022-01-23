@@ -1,29 +1,8 @@
 @page "/employeeGrowthChart"
-@inject IJSRuntime _jsRuntime
-@using BlazorAppWasmLab.Client.Services
-@using BlazorAppWasmLab.Client.Interfaces
-@implements IAsyncDisposable
-@inject IEmployeeSummaryService _employeeSummaryService
+@using BlazorAppWasmLab.Client.Components
 <PageTitle>Employee Growth Chart</PageTitle>
-
-<div id="container"></div>
+<EmployeeGrowthChartComponent ContainerId="emp-growth-chart"/>
 
 @code {
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/src/employee-growth-chart-export.js?v={DateTime.Now}");
-            var data = await _employeeSummaryService.GetDataAsync();
-            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", data);
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await (_employeeGrowthChart?.DisposeAsync() ?? ValueTask.CompletedTask);
-    }
-
-    private IJSObjectReference? _employeeGrowthChart;
 }
