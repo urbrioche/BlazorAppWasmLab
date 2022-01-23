@@ -1,6 +1,9 @@
 @page "/employeeGrowthChart"
 @inject IJSRuntime _jsRuntime
+@using BlazorAppWasmLab.Client.Services
+@using BlazorAppWasmLab.Client.Interfaces
 @implements IAsyncDisposable
+@inject IEmployeeSummaryService _employeeSummaryService
 <PageTitle>Employee Growth Chart</PageTitle>
 
 <div id="container"></div>
@@ -11,8 +14,9 @@
     {
         if (firstRender)
         {
-            _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/src/employee-growth-chart-export.js");
-            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render");
+            _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/src/employee-growth-chart-export.js?v={DateTime.Now}");
+            var data = await _employeeSummaryService.GetDataAsync();
+            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", data);
         }
     }
 
