@@ -1,5 +1,6 @@
 @inject IJSRuntime _jsRuntime
 @using BlazorAppWasmLab.Client.Interfaces
+@using BlazorAppWasmLab.Client.Services
 @implements IAsyncDisposable
 @inject IEmployeeSummaryService _employeeSummaryService
 
@@ -10,13 +11,23 @@
     [Parameter]
     public string? ContainerId { get; set; }
 
+    [Parameter]
+    public IEnumerable<EmployeeSummary>? Data { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/src/employee-growth-chart-export.js?v={DateTime.Now}");
-            var data = await _employeeSummaryService.GetDataAsync();
-            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {data, ContainerId});
+    // var data = await _employeeSummaryService.GetDataAsync();
+        }
+    }
+
+    public async Task Render()
+    {
+        if (_employeeGrowthChart != null)
+        {
+            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data, ContainerId});
         }
     }
 

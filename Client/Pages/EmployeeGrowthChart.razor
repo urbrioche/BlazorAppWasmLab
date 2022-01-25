@@ -1,8 +1,36 @@
 @page "/employeeGrowthChart"
 @using BlazorAppWasmLab.Client.Components
+@using BlazorAppWasmLab.Client.Interfaces
+@using BlazorAppWasmLab.Client.Services
+@inject IEmployeeSummaryService _employeeSummaryService
+
 <PageTitle>Employee Growth Chart</PageTitle>
-<EmployeeGrowthChartComponent ContainerId="emp-growth-chart"/>
+@* @if (Data != null) *@
+@* { *@
+<EmployeeGrowthChartComponent @ref="C1" ContainerId="emp-growth-chart"/>
+@* } *@
 
 @code {
+
+    public EmployeeGrowthChartComponent? C1;
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await base.OnInitializedAsync();
+    //     Data = await _employeeSummaryService.GetDataAsync();
+    //     C1.Data = Data; 
+    //     StateHasChanged();
+    // }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Data = await _employeeSummaryService.GetDataAsync();
+            C1.Data = Data;
+            await C1.Render();
+        }
+    }
+
+    public IEnumerable<EmployeeSummary>? Data { get; set; }
 
 }

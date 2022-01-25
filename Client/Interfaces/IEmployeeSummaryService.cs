@@ -4,5 +4,5 @@ namespace BlazorAppWasmLab.Client.Interfaces;
 
 public interface IEmployeeSummaryService
 {
-    Task<IEnumerable<EmployeeSummary>> GetDataAsync();
+    Task<IEnumerable<EmployeeSummary>?> GetDataAsync();
 }

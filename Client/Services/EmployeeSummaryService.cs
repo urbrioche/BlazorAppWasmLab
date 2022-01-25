@@ -12,7 +12,7 @@ public class EmployeeSummaryService : IEmployeeSummaryService
         _httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<EmployeeSummary>> GetDataAsync()
+    public async Task<IEnumerable<EmployeeSummary>?> GetDataAsync()
     {
         return await _httpClient.GetFromJsonAsync<List<EmployeeSummary>>("Employee/GetEmployeeSummary") ??
                new List<EmployeeSummary>();
