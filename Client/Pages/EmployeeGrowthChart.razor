@@ -3,34 +3,93 @@
 @using BlazorAppWasmLab.Client.Interfaces
 @using BlazorAppWasmLab.Client.Services
 @inject IEmployeeSummaryService _employeeSummaryService
-
+@implements IDisposable
+@i
 <PageTitle>Employee Growth Chart</PageTitle>
-@* @if (Data != null) *@
-@* { *@
-<EmployeeGrowthChartComponent @ref="C1" ContainerId="emp-growth-chart"/>
-@* } *@
+@for (int i = 0; i < _chartCount; i++)
+{
+    <div style="border: #0a53be 1px solid;">
+        @i
+        <EmployeeGrowthChartComponent @ref="C1" ContainerId="@("emp-growth-chart" + i)"/>
+    </div>
+}
 
 @code {
 
-    public EmployeeGrowthChartComponent? C1;
-    // protected override async Task OnInitializedAsync()
+    private int _chartCount = 5;
+    private bool running = true;
+
+    public EmployeeGrowthChartComponent C1
+    {
+        set => Charts.Add(value);
+    }
+
+    public List<EmployeeGrowthChartComponent> Charts = new();
+    public int i = 0;
+    private CancellationTokenSource _cancellationTokenSource = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+    // 不會動
+        foreach (var chart in Charts)
+        {
+            Console.WriteLine("in OnInitializedAsync");
+            var data = await _employeeSummaryService.GetDataAsync();
+            if (_cancellationTokenSource.Token.IsCancellationRequested)
+            {
+                break;
+            }
+            chart.DataSource = data;
+            await chart.Render();
+        }
+    // for (int i = 0; i < _chartCount; i++)
     // {
-    //     await base.OnInitializedAsync();
-    //     Data = await _employeeSummaryService.GetDataAsync();
-    //     C1.Data = Data; 
-    //     StateHasChanged();
+    //     var data = await _employeeSummaryService.GetDataAsync();
+    //     if (_cancellationTokenSource.Token.IsCancellationRequested)
+    //     {
+    //         break;
+    //     }
+    //     Charts[i].DataSource = data;
+    //     await Charts[i].Render();
     // }
+    // while (i < 100)
+    // {
+    //     await InvokeAsync(() => i++);
+    // }
+    }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Data = await _employeeSummaryService.GetDataAsync();
-            C1.Data = Data;
-            await C1.Render();
+    // 會動
+            foreach (var chart in Charts)
+            {
+                Console.WriteLine("in OnAfterRenderAsync");
+                var data = await _employeeSummaryService.GetDataAsync();
+                if (_cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    break;
+                }
+                chart.DataSource = data;
+                await chart.Render();
+            }
         }
+    // if (firstRender)
+    // {j
+    // Data = await _employeeSummaryService.GetDataAsync();
+    // StateHasChanged();
+    //C1.Data = Data;
+    //await C1.Render();
+    // }
     }
 
     public IEnumerable<EmployeeSummary>? Data { get; set; }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+    }
 
 }

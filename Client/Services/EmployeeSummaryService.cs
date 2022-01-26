@@ -14,6 +14,7 @@ public class EmployeeSummaryService : IEmployeeSummaryService
 
     public async Task<IEnumerable<EmployeeSummary>?> GetDataAsync()
     {
+        await Task.Delay(1000);
         return await _httpClient.GetFromJsonAsync<List<EmployeeSummary>>("Employee/GetEmployeeSummary") ??
                new List<EmployeeSummary>();
     }

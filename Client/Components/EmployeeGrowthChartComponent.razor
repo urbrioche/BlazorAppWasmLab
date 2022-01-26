@@ -12,13 +12,14 @@
     public string? ContainerId { get; set; }
 
     [Parameter]
-    public IEnumerable<EmployeeSummary>? Data { get; set; }
+    public IEnumerable<EmployeeSummary>? DataSource { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/src/employee-growth-chart-export.js?v={DateTime.Now}");
+            // await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data = DataSource, ContainerId});
     // var data = await _employeeSummaryService.GetDataAsync();
         }
     }
@@ -27,7 +28,7 @@
     {
         if (_employeeGrowthChart != null)
         {
-            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data, ContainerId});
+            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data = DataSource, ContainerId});
         }
     }
 
