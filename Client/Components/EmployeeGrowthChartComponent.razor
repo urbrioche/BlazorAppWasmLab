@@ -4,6 +4,7 @@
 @implements IAsyncDisposable
 @inject IEmployeeSummaryService _employeeSummaryService
 
+<button class="btn btn-primary" disabled="@(DataSource == null)">Click</button>
 <div id="@ContainerId"></div>
 
 @code {
@@ -14,12 +15,17 @@
     [Parameter]
     public IEnumerable<EmployeeSummary>? DataSource { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/src/employee-growth-chart-export.js?v={DateTime.Now}");
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/src/employee-growth-chart-export.js?v={DateTime.Now}");
-            // await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data = DataSource, ContainerId});
+    // _employeeGrowthChart = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/src/employee-growth-chart-export.js?v={DateTime.Now}");
+    // await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data = DataSource, ContainerId});
     // var data = await _employeeSummaryService.GetDataAsync();
         }
     }
@@ -29,6 +35,7 @@
         if (_employeeGrowthChart != null)
         {
             await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data = DataSource, ContainerId});
+            StateHasChanged();
         }
     }
 

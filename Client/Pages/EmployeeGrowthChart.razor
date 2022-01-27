@@ -2,6 +2,7 @@
 @using BlazorAppWasmLab.Client.Components
 @using BlazorAppWasmLab.Client.Interfaces
 @using BlazorAppWasmLab.Client.Services
+@using System.Reflection
 @inject IEmployeeSummaryService _employeeSummaryService
 @implements IDisposable
 @i
@@ -12,6 +13,11 @@
         @i
         <EmployeeGrowthChartComponent @ref="C1" ContainerId="@("emp-growth-chart" + i)"/>
     </div>
+}
+
+@if (_done)
+{
+    <div>Done</div>
 }
 
 @code {
@@ -27,6 +33,7 @@
     public List<EmployeeGrowthChartComponent> Charts = new();
     public int i = 0;
     private CancellationTokenSource _cancellationTokenSource = new();
+    private bool _done = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,6 +82,9 @@
                 chart.DataSource = data;
                 await chart.Render();
             }
+            _done = true;
+            StateHasChanged();
+            // StateHasChanged();
         }
     // if (firstRender)
     // {j
