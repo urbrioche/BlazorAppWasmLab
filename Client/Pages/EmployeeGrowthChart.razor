@@ -2,100 +2,60 @@
 @using BlazorAppWasmLab.Client.Components
 @using BlazorAppWasmLab.Client.Interfaces
 @using BlazorAppWasmLab.Client.Services
-@using System.Reflection
 @inject IEmployeeSummaryService _employeeSummaryService
 @implements IDisposable
-@i
 <PageTitle>Employee Growth Chart</PageTitle>
-@for (int i = 0; i < _chartCount; i++)
+
+@*一開始這這邊不會跑，因為ChartCount的初始為0*@
+@for (var num = 0; num < ChartCount; num++)
 {
     <div style="border: #0a53be 1px solid;">
-        @i
-        <EmployeeGrowthChartComponent @ref="C1" ContainerId="@("emp-growth-chart" + i)"/>
+        <div>第@(num + 1)張圖</div>
+        <EmployeeGrowthChartComponent @ref="ChartComponent" DataSource="@DataSource"/>
     </div>
-}
-
-@if (_done)
-{
-    <div>Done</div>
 }
 
 @code {
 
-    private int _chartCount = 5;
-    private bool running = true;
+    public int ChartCount { get; set; } = 0;
 
-    public EmployeeGrowthChartComponent C1
+    public IEnumerable<EmployeeSummary>? DataSource { get; set; }
+
+    public EmployeeGrowthChartComponent ChartComponent
     {
-        set => Charts.Add(value);
+        set => ChartComponents.Add(value);
     }
 
-    public List<EmployeeGrowthChartComponent> Charts = new();
-    public int i = 0;
+    public List<EmployeeGrowthChartComponent> ChartComponents = new();
     private CancellationTokenSource _cancellationTokenSource = new();
-    private bool _done = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-    // 不會動
-        foreach (var chart in Charts)
-        {
-            Console.WriteLine("in OnInitializedAsync");
-            var data = await _employeeSummaryService.GetDataAsync();
-            if (_cancellationTokenSource.Token.IsCancellationRequested)
-            {
-                break;
-            }
-            chart.DataSource = data;
-            await chart.Render();
-        }
-    // for (int i = 0; i < _chartCount; i++)
-    // {
-    //     var data = await _employeeSummaryService.GetDataAsync();
-    //     if (_cancellationTokenSource.Token.IsCancellationRequested)
-    //     {
-    //         break;
-    //     }
-    //     Charts[i].DataSource = data;
-    //     await Charts[i].Render();
-    // }
-    // while (i < 100)
-    // {
-    //     await InvokeAsync(() => i++);
-    // }
+    // 從這邊設定要畫20張圖，此時，畫面會長出20個div
+        ChartCount = 20;
+    // 這邊不用呼叫StateHasChanged
+    // StateHasChanged();
     }
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-    // 會動
-            foreach (var chart in Charts)
+    // 當畫面長出div後，開始畫圖
+            foreach (var chart in ChartComponents)
             {
-                Console.WriteLine("in OnAfterRenderAsync");
                 var data = await _employeeSummaryService.GetDataAsync();
-                if (_cancellationTokenSource.Token.IsCancellationRequested)
-                {
-                    break;
-                }
-                chart.DataSource = data;
+                DataSource = data;
+                StateHasChanged();
+    // if (_cancellationTokenSource.Token.IsCancellationRequested)
+    // {
+    //     break;
+    // }
                 await chart.Render();
             }
-            _done = true;
-            StateHasChanged();
-            // StateHasChanged();
         }
-    // if (firstRender)
-    // {j
-    // Data = await _employeeSummaryService.GetDataAsync();
-    // StateHasChanged();
-    //C1.Data = Data;
-    //await C1.Render();
-    // }
     }
 
-    public IEnumerable<EmployeeSummary>? Data { get; set; }
 
     public void Dispose()
     {

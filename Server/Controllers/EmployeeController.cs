@@ -6,8 +6,11 @@ namespace BlazorAppWasmLab.Server.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        public IEnumerable<EmployeeSummary> GetEmployeeSummary()
+        public async Task<IEnumerable<EmployeeSummary>> GetEmployeeSummary()
         {
+            // 模擬網路延遲
+            await Task.Delay(3000);
+            
             return new EmployeeSummary[]
             {
                 new EmployeeSummary()
@@ -58,7 +61,7 @@ namespace BlazorAppWasmLab.Server.Controllers
                     Year = "2017",
                     NumberOfEmployee = 154175,
                 },
-                
+
                 new EmployeeSummary()
                 {
                     Sector = "Manufacturing",
@@ -107,7 +110,7 @@ namespace BlazorAppWasmLab.Server.Controllers
                     Year = "2017",
                     NumberOfEmployee = 40434,
                 },
-                
+
                 new EmployeeSummary()
                 {
                     Sector = "Sales & Distribution",
@@ -156,7 +159,7 @@ namespace BlazorAppWasmLab.Server.Controllers
                     Year = "2017",
                     NumberOfEmployee = 39387,
                 },
-                
+
                 new EmployeeSummary()
                 {
                     Sector = "Project Development",
@@ -205,7 +208,7 @@ namespace BlazorAppWasmLab.Server.Controllers
                     Year = "2017",
                     NumberOfEmployee = 34227,
                 },
-                
+
                 new EmployeeSummary()
                 {
                     Sector = "Other",
@@ -254,8 +257,6 @@ namespace BlazorAppWasmLab.Server.Controllers
                     Year = "2017",
                     NumberOfEmployee = 18111,
                 },
-                
-                
             };
         }
     }
