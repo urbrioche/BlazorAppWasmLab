@@ -5,7 +5,7 @@
 @inject IEmployeeSummaryService _employeeSummaryService
 
 <button class="btn btn-primary" disabled="@(DataSource == null)">Click</button>
-<div id="@ContainerId"></div>
+<div @ref="Chart"></div>
 
 @code {
 
@@ -34,7 +34,7 @@
     {
         if (_employeeGrowthChart != null)
         {
-            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data = DataSource, ContainerId});
+            await _employeeGrowthChart.InvokeVoidAsync("employeeGrowthChart.render", new {Data = DataSource, ContainerId = Chart});
             StateHasChanged();
         }
     }
@@ -45,4 +45,6 @@
     }
 
     private IJSObjectReference? _employeeGrowthChart;
+    public ElementReference Chart { get; set; }
+
 }
