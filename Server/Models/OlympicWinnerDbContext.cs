@@ -14,6 +14,6 @@ public class OlympicWinnerDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // SeedData.Init(modelBuilder);
+        SeedData.Init(modelBuilder);
     }
 }
