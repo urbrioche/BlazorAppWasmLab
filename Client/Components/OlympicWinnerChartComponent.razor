@@ -1,0 +1,42 @@
+@inject IJSRuntime _jsRuntime
+@implements IAsyncDisposable
+<div @ref="Chart">com</div>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<OlympicWinner>? DataSource { get; set; }
+
+    [Parameter]
+    public string? SportName { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _chartJs = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/olympic-winner-chart-blazor.js");
+        }
+    }
+
+    public async Task Render()
+    {
+        if (_chartJs != null)
+        {
+            await _chartJs.InvokeVoidAsync("olympicWinnerChart.render", new {Data = DataSource, ContainerId = Chart});
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await (_chartJs?.DisposeAsync() ?? ValueTask.CompletedTask);
+    }
+
+    protected override bool ShouldRender()
+    {
+        return false;
+    }
+
+    private IJSObjectReference? _chartJs;
+    public ElementReference Chart { get; set; }
+
+}

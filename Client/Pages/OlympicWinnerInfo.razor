@@ -1,0 +1,53 @@
+@page "/olympicwinnerinfo"
+@implements IDisposable
+@inject IOlympicWinnerService _olympicWinnerService
+
+@foreach (var sport in Sports)
+{
+    <div>
+        @sport
+    </div>
+    <div>
+        <OlympicWinnerChartComponent @ref="ChartComponent" SportName="@sport"></OlympicWinnerChartComponent>
+    </div>
+}
+
+@code {
+
+    public IEnumerable<string> Sports { get; set; } = new List<string>();
+    public IEnumerable<OlympicWinner>? DataSource { get; set; }
+    public List<OlympicWinnerChartComponent> ChartComponents = new();
+    private CancellationTokenSource _cancellationTokenSource = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sports = await _olympicWinnerService.GetSportAsync();
+    }
+
+
+    public OlympicWinnerChartComponent ChartComponent
+    {
+        set => ChartComponents.Add(value);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // if (firstRender)
+        // {
+            foreach (var chart in ChartComponents)
+            {
+                var data = await _olympicWinnerService.GetWinnerAsync(chart.SportName ?? "");
+                chart.DataSource = data;
+    // DataSource = data;
+    // StateHasChanged();
+                await chart.Render();
+            }
+        // }
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+    }
+
+}
