@@ -3,6 +3,7 @@ using System;
 using BlazorAppWasmLab.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorAppWasmLab.Server.Migrations
 {
     [DbContext(typeof(OlympicWinnerDbContext))]
-    partial class OlympicWinnerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220213023726_OlympicWinner age allow null")]
+    partial class OlympicWinnerageallownull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.2");

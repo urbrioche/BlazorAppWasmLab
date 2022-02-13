@@ -17,11 +17,24 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Client\BlazorAppWasmLab.Client.csproj" />
     <ProjectReference Include="..\Shared\BlazorAppWasmLab.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="readme.md" />
+    <None Remove="MyDb.db-wal" />
+    <None Remove="MyDb.db-shm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20220212145536_Initial.cs" />
+    <Compile Remove="Migrations\20220212145536_Initial.Designer.cs" />
+    <Compile Remove="Controllers\OlympicController.cs" />
   </ItemGroup>
 
 

@@ -11,4 +11,9 @@ public class OlympicWinnerDbContext : DbContext
     }
 
     public DbSet<OlympicWinner> OlympicWinners { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // SeedData.Init(modelBuilder);
+    }
 }
