@@ -1,0 +1,20 @@
+@page "/olympicwinner"
+@inject IOlympicWinnerService _olympicWinnerService
+
+@foreach (var sport in Sports)
+{
+    <div>
+        @sport
+    </div>
+}
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sports = await _olympicWinnerService.GetSportAsync();
+    }
+
+    public IEnumerable<string> Sports { get; set; } = new List<string>();
+
+}
