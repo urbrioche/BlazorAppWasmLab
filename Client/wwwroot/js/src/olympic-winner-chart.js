@@ -1,18 +1,36 @@
 export class OlympicWinnerChart {
     render(options) {
+        debugger
         const {data, containerId} = options;
         console.log(data);
         const years = _.chain(data).map(x => x.year).orderBy().uniq().value();
-        const data1 = _.chain(data)
-            .orderBy(['year'])
-            .map(x => {
+        // const countries = _.chain(data).map(x => x.country).orderBy().uniq().value();
+        //
+        // _.chain(data)
+        //     .groupBy(x => x.year)
+        //     .entries()
+        //     .orderBy(([key, value]) => key)
 
-                return {
-                    x: years.indexOf(x.year),
-                    y: x.total,
-                    name: x.sport,
-                }
-            }).value();
+        const series = _.chain(data).groupBy(x => x.country).entries().map(([country, value]) => {
+            const dataMap = new Map(_.chain(value).groupBy(x => x.year).entries().map(([year, val]) => [year, _.sum(val.map(m => m.total))]).value());
+            const metals = years.map(year => dataMap.get(`${year}`) || 0);
+            return {
+                name: country,
+                data: metals
+            };
+        }).value();
+
+
+        // const data1 = _.chain(data)
+        //     .orderBy(['year'])
+        //     .map(x => {
+        //
+        //         return {
+        //             x: years.indexOf(x.year),
+        //             y: x.total,
+        //             name: x.sport,
+        //         }
+        //     }).value();
 
         Highcharts.chart(containerId, {
             chart: {
@@ -64,7 +82,7 @@ export class OlympicWinnerChart {
                     }
                 }
             },
-            series: [{data:data1}],
+            series: series,
             // series: [{
             //     name: 'John',
             //     data: [5, 3, 4, 7, 2]

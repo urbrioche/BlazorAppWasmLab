@@ -10,25 +10,31 @@
     [Parameter]
     public string? SportName { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            _chartJs = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/olympic-winner-chart-blazor.js");
-        }
+        _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/olympic-winner-chart-blazor.js");
     }
 
-    public async Task Render()
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //     }
+    // }
+
+    public async Task Render(IEnumerable<OlympicWinner> data)
     {
-        if (_chartJs != null)
+    // _chartJs = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/olympic-winner-chart-blazor.js");
+        if (_jsModule is not null)
         {
-            await _chartJs.InvokeVoidAsync("olympicWinnerChart.render", new {Data = DataSource, ContainerId = Chart});
+            var chart = await _jsModule.InvokeAsync<IJSObjectReference>("createOlympicWinnerChart");
+            await chart.InvokeVoidAsync("render", new {Data = data, ContainerId = Chart});
         }
     }
 
     public async ValueTask DisposeAsync()
     {
-        await (_chartJs?.DisposeAsync() ?? ValueTask.CompletedTask);
+        await (_jsModule?.DisposeAsync() ?? ValueTask.CompletedTask);
     }
 
     protected override bool ShouldRender()
@@ -36,7 +42,7 @@
         return false;
     }
 
-    private IJSObjectReference? _chartJs;
+    private IJSObjectReference? _jsModule;
     public ElementReference Chart { get; set; }
 
 }
