@@ -1,14 +1,26 @@
 @page "/olympicwinnerinfo"
+@using Radzen
 @implements IDisposable
 @inject IOlympicWinnerService _olympicWinnerService
 
+<RadzenDropDown
+    TValue="IEnumerable<string>"
+    @bind-Value="SelectedSports"
+    Data="Sports"
+    Multiple="true"
+    AllowFiltering="true"
+    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+    AllowClear="true">
+</RadzenDropDown>
 @foreach (var sport in Sports)
 {
-    <div>
-        @sport
-    </div>
-    <div>
-        <OlympicWinnerChartComponent @ref="ChartComponent" SportName="@sport"></OlympicWinnerChartComponent>
+    <div style="display: @(SelectedSports.Contains(sport) ? "block" : "none")">
+        <div>
+            @sport
+        </div>
+        <div>
+            <OlympicWinnerChartComponent @ref="ChartComponent" SportName="@sport"></OlympicWinnerChartComponent>
+        </div>
     </div>
 }
 
@@ -18,6 +30,7 @@
     public IEnumerable<OlympicWinner>? DataSource { get; set; }
     public List<OlympicWinnerChartComponent> ChartComponents = new();
     private CancellationTokenSource _cancellationTokenSource = new();
+    private IEnumerable<string>? _selectedSports = Enumerable.Empty<string>();
 
     public OlympicWinnerChartComponent ChartComponent
     {
@@ -29,6 +42,7 @@
         if (firstRender)
         {
             Sports = await _olympicWinnerService.GetSportAsync();
+            SelectedSports = Sports;
             await InvokeAsync(async () =>
             {
                 await Task.Delay(1);
@@ -55,6 +69,13 @@
     public void Dispose()
     {
         _cancellationTokenSource.Cancel();
+    }
+
+    public IEnumerable<string> SelectedSports
+    {
+    // when clear all items by x button, the value will be null
+        get => _selectedSports ?? Enumerable.Empty<string>();
+        set => _selectedSports = value;
     }
 
 }
