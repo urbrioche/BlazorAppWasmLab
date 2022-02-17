@@ -1,81 +1,63 @@
 @page "/olympicwinnerinfo"
 @using Radzen
 @implements IDisposable
-@inject IOlympicWinnerService _olympicWinnerService
+@implements IRazorPage
+@inject OlympicWinnerViewModel _viewModel
 
 <RadzenDropDown
     TValue="IEnumerable<string>"
-    @bind-Value="SelectedSports"
-    Data="Sports"
+    @bind-Value="_viewModel.SelectedSports"
+    Data="_viewModel.Sports"
     Multiple="true"
     AllowFiltering="true"
     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
     AllowClear="true">
 </RadzenDropDown>
-@foreach (var sport in Sports)
+@foreach (var sport in _viewModel.Sports)
 {
-    <div style="display: @(SelectedSports.Contains(sport) ? "block" : "none")">
+    <div style="display: @(_viewModel.SelectedSports.Contains(sport) ? "block" : "none")">
         <div>
             @sport
         </div>
         <div>
-            <OlympicWinnerChartComponent @ref="ChartComponent" SportName="@sport"></OlympicWinnerChartComponent>
+            <OlympicWinnerChartComponent @ref="_viewModel.ChartComponent" SportName="@sport"></OlympicWinnerChartComponent>
         </div>
     </div>
 }
 
 @code {
 
-    public IEnumerable<string> Sports { get; set; } = new List<string>();
-    public IEnumerable<OlympicWinner>? DataSource { get; set; }
-    public List<OlympicWinnerChartComponent> ChartComponents = new();
-    private CancellationTokenSource _cancellationTokenSource = new();
-    private IEnumerable<string>? _selectedSports = Enumerable.Empty<string>();
-
-    public OlympicWinnerChartComponent ChartComponent
+    protected override void OnInitialized()
     {
-        set => ChartComponents.Add(value);
+        _viewModel.Setup(this);
+        base.OnInitialized();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Sports = await _olympicWinnerService.GetSportAsync();
-            SelectedSports = Sports;
-            await InvokeAsync(async () =>
-            {
-                await Task.Delay(1);
-                StateHasChanged();
-            });
-    // if (firstRender)
-    // {
-            foreach (var chart in ChartComponents)
-            {
-                var data = await _olympicWinnerService.GetWinnerAsync(chart.SportName ?? "");
-                await Task.Delay(100);
-    // chart.DataSource = data;
-    // DataSource = data;
-    // StateHasChanged();
-                if (!_cancellationTokenSource.Token.IsCancellationRequested)
-                {
-                    await chart.Render(data);
-                }
-            }
+            await _viewModel.RenderChartAsync();
         }
-    // }
     }
 
     public void Dispose()
     {
-        _cancellationTokenSource.Cancel();
+        _viewModel.CancellationTokenSource.Cancel();
     }
 
-    public IEnumerable<string> SelectedSports
+    public async Task NeedRefreshAsync()
     {
-    // when clear all items by x button, the value will be null
-        get => _selectedSports ?? Enumerable.Empty<string>();
-        set => _selectedSports = value;
+        await InvokeAsync(async () =>
+        {
+            await Task.Delay(500);
+            StateHasChanged();
+        });
+    }
+
+    public async Task NeedInvokeAsync(Action action)
+    {
+        await InvokeAsync(action);
     }
 
 }
