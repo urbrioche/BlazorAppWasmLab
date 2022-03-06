@@ -1,6 +1,6 @@
 @inject IJSRuntime _jsRuntime
 @implements IAsyncDisposable
-<div @ref="Chart">com</div>
+<div @ref="Chart">我是Chart</div>
 
 @code {
 
@@ -9,27 +9,12 @@
 
     [Parameter]
     public string? SportName { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/olympic-winner-chart-blazor.js");
-    }
-
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     if (firstRender)
-    //     {
-    //     }
-    // }
-
+    
     public async Task Render(IEnumerable<OlympicWinner> data)
     {
-    // _chartJs = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/olympic-winner-chart-blazor.js");
-        if (_jsModule is not null)
-        {
-            var chart = await _jsModule.InvokeAsync<IJSObjectReference>("createOlympicWinnerChart");
-            await chart.InvokeVoidAsync("render", new {Data = data, ContainerId = Chart});
-        }
+        _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", $"./js/olympic-winner-chart-blazor.js");
+        var chart = await _jsModule.InvokeAsync<IJSObjectReference>("createOlympicWinnerChart");
+        await chart.InvokeVoidAsync("render", new {Data = data, ContainerId = Chart});
     }
 
     public async ValueTask DisposeAsync()
